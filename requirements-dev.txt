@@ -1,0 +1,13 @@
+autopep8
+pytest==5.0.1
+pytest-cov
+flake8
+flake8-bugbear
+flake8-docstrings
+flake8-import-order
+flake8-mypy
+pep8-naming
+flake8-quotes
+pylint
+pydocstyle<4.0.0
+docker

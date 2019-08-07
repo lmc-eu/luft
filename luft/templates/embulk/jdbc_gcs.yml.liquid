@@ -1,0 +1,21 @@
+{% include 'jdbc_in' %}
+out:
+   type: gcs
+   bucket: {{ env.GCS_BUCKET }}
+   path_prefix: {{ env.PATH_PREFIX }}
+   file_ext: .tsv.gz
+   auth_method: {{ env.GCS_AUTH_METHOD }}
+   {{ env.GCS_APP_NAME }}
+   {{ env.GCS_SERVICE_ACCOUNT_EMAIL }}
+   {{ env.GCS_P12_KEYFILE }}
+   {{ env.GCS_JSON_KEYFILE }}
+   formatter:
+      type: csv
+      delimiter: "\t"
+      quote_policy: MINIMAL
+      header_line: true
+      escape: "^"
+      null_string: "\\N"
+   encoders:
+   -  type: gzip
+      level: 6

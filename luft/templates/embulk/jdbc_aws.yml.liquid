@@ -1,0 +1,19 @@
+{% include 'jdbc_in' %}
+out:
+   type: s3
+   path_prefix: {{ env.PATH_PREFIX }}
+   endpoint: {{ env.AWS_ENDPOINT }}
+   bucket: {{ env.AWS_BUCKET }}
+   access_key_id: {{ env.AWS_ACCESS_KEY_ID }}
+   secret_access_key: {{ env.AWS_SECRET_ACCESS_KEY }}
+   file_ext: .tsv.gz
+   formatter:
+      type: csv
+      delimiter: "\t"
+      quote_policy: MINIMAL
+      header_line: true
+      escape: "^"
+      null_string: "\\N"
+   encoders:
+   -  type: gzip
+      level: 6

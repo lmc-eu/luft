@@ -1,0 +1,18 @@
+name: CITY
+columns: 
+  - name: ID
+    type: number(32)
+    mandatory: True
+    pk: True
+  - name: NAME
+    type: string
+    mandatory: True
+  - name: COUNTRYCODE
+    type: string(3)
+    mandatory: True
+  - name: DISTRICT
+    type: string
+    mandatory: True
+  - name: POPULATION
+    type: number(32)
+    mandatory: True

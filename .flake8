@@ -1,0 +1,6 @@
+[flake8]
+ignore = S101
+max-complexity = 10
+max-line-length = 100
+exclude = .git, test_data, .pytest_cache, venv, .vscode, __init__.py, *.sql
+format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s

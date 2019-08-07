@@ -1,0 +1,15 @@
+name: COUNTRYLANGUAGE
+columns: 
+  - name: COUNTRYCODE
+    type: string(3)
+    mandatory: True
+    pk: True
+  - name: LANGUAGE
+    type: string
+    mandatory: True
+  - name: ISOFFICIAL
+    type: boolean
+    mandatory: True
+  - name: PERCENTAGE
+    type: float(24)
+    mandatory: True

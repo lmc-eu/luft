@@ -1,0 +1,4 @@
+name: Test
+sql_folder: example/sql/
+sql_files:
+  - bq.sql
