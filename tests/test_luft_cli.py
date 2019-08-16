@@ -16,6 +16,5 @@ def runner():
 @pytest.mark.unit
 def test_jdbc_load(runner, postgres_db):
     """Test JDBC load."""
-    runner = CliRunner()
     result = runner.invoke(luft, ['jdbc', 'load', '-y', 'world'])
     assert result.exit_code == 0

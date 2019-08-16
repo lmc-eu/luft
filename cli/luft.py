@@ -53,8 +53,6 @@ def _daterange(start_date, end_date):
         date_valid = start_date + timedelta(n)
         yield date_valid.strftime('%Y-%m-%d')
 
-# TODO date
-
 
 def _loop_tasks(task_list, **kwargs):
     start = datetime.strptime(kwargs.get('start_date'), '%Y-%m-%d') if kwargs.get('start_date') \
@@ -133,6 +131,26 @@ def exec(ctx: click.core.Context, yml_path: str, start_date: str, start_time: st
                               blacklist=blacklist, whitelist=whitelist, glob_filter=glob_filter)
     task_list = filter_script_list(
         task_list, script_whitelist, script_blacklist)
+    _loop_tasks(task_list)
+
+
+@luft.group(help='Tools for working with Qlik Sense Cloud.')
+@click.pass_context
+def qlik_cloud(_ctx):
+    """Qlik Cloud."""
+    pass
+
+
+@qlik_cloud.command(help='Export app from QSE, upload it and publish it into Qlik Sense Cloud.')
+@add_options(task_list_options)
+@click.pass_context
+def upload(ctx: click.core.Context, yml_path: str, start_date: str, start_time: str,
+           end_date: str, source_system: str, source_subsystem: str, blacklist: List[str],
+           whitelist: List[str], glob_filter: str):
+    """Upload app to Qlik Sense Cloud."""
+    task_list = _create_tasks(task_type='qlik-cloud-upload', yml_path=yml_path,
+                              source_system=source_system, source_subsystem=source_subsystem,
+                              blacklist=blacklist, whitelist=whitelist, glob_filter=glob_filter)
     _loop_tasks(task_list)
 
 

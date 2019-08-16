@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Setup."""
 import os
-import subprocess
 from pathlib import Path
 
 from setuptools import Command, find_packages, setup
@@ -34,7 +33,8 @@ if README_PATH.exists():
 install_requires = []
 extras_require = {
     'dev': [],
-    'bq': ['google-cloud-bigquery']
+    'bq': ['google-cloud-bigquery==1.18.0'],
+    'qlik-cloud': ['selenium==3.141.0']
 }
 
 # requirements file

@@ -169,3 +169,5 @@ Temporary Items
 /jdbc.cfg
 /luft.cfg
 service_account.json
+/qlik_export
+/qlik*

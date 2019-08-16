@@ -1,0 +1,11 @@
+name: LMC
+account_id: 
+apps:
+  - name: test1
+    filename: test1
+    qse_id: 
+    qsc_stream: 
+  - name: test2
+    filename: test2
+    qse_id: 
+    qsc_stream: 
