@@ -89,7 +89,6 @@ class TaskList:
         """
         task_list_def: List[Dict[str, str]] = []
         try:
-            print(yml_path)
             if yml_path.is_dir():  # yaml var is a directory
                 glob_filter = '**/*.yml' if not glob_filter else glob_filter
                 yml_files = sorted(
