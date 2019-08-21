@@ -11,5 +11,5 @@ columns:
     type: boolean
     mandatory: True
   - name: PERCENTAGE
-    type: float(24)
+    type: float64
     mandatory: True

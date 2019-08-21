@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Column."""
-from typing import Optional
+from typing import List, Optional, Union
 
-from luft.common.config import EMBULK_TYPE_MAPPER, SUPPORTED_DATA_TYPES
+from luft.common.config import EMBULK_TYPE_MAPPER
 from luft.common.logger import setup_logger
 
 # Setup logger
@@ -68,7 +68,7 @@ class Column:
         # Decide if value should be returned
         if self._should_return(col_type, filter_ignored, include_tech):
             name = self.rename or self.name
-            return name.upper()
+            return name
         return None
 
     def get_index(self, col_type: str = 'all', filter_ignored: bool = True,
@@ -124,7 +124,8 @@ class Column:
         return None
 
     def get_def(self, col_type: str = 'all', filter_ignored: bool = True,
-                include_tech: bool = True) -> Optional[str]:
+                include_tech: bool = True,
+                supported_types: Union[List[str], None] = None) -> Optional[str]:
         """Return column sql definition.
 
         E.g. `col_name VARCHAR NOT NULL`.
@@ -146,7 +147,7 @@ class Column:
         """
         if self._should_return(col_type, filter_ignored, include_tech):
             return (f'{self.get_name()}'
-                    f' {self._get_type()}'
+                    f' {self._get_type(supported_types=supported_types)}'
                     f'{self._get_mandatory_def()}')
         return None
 
@@ -245,12 +246,17 @@ class Column:
         return self.data_type.split('(')[0]
 
     def _get_type(self, col_type: str = 'all', filter_ignored: bool = True,
-                  include_tech: bool = True) -> Optional[str]:
+                  include_tech: bool = True, without_length: bool = True,
+                  supported_types: Union[List[str], None] = None) -> Optional[str]:
         """Return column type if it is valid data type."""
+        supported_types = supported_types or []
         if self._should_return(col_type, filter_ignored, include_tech):
             clean_type = self._get_clean_data_type().upper()
-            if clean_type in SUPPORTED_DATA_TYPES:
-                return self.data_type.upper()
+            if clean_type in supported_types:
+                if without_length:
+                    return clean_type.upper()
+                else:
+                    return self.data_type.upper()
             raise TypeError(
                 f'Column type `{clean_type}` is not supported data type.')
         return None

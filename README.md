@@ -109,6 +109,13 @@ When I specify any _thread_name_ in task T4:
 ```
 
 * *color* - applicable only when used with Airflow. Hex color of Task in Airflow. If not specified `#A3E9DA` is used.
+* *path_prefix* - Path prefix (path) on blob storage. You can use following templated fields:
+  * {env} - your environment (DEV/PROD...)
+  * {source_system} - name of source system (whatever you like) - in case of jdbc it is usually friendly name of db
+  * {source_subsystem} - name of source subsystem (whatever you like) - in case of jdbc it is schema name
+  * {name} - name of table
+  * {date_valid} - date of valid of export
+  * {time_valid} - time valid of export
 * *embulk_template* - path to your custom embulk template. Otherwise default from `luft.cfg` will be used.
 * *fetch_rows* - number of rows to fetch one time. Default 10000.
 * *source_table* - in case you need different name in blob storage. E.g. Table name is Test1 but you want to rename it to Test in your DWH and on your blob storage. In this case you will write Test to your _name_ parameter in yaml file and Test1 in _source_table_ parameter.
@@ -120,6 +127,83 @@ When I specify any _thread_name_ in task T4:
   * *pk* - wheter column is primary key. Default false.
   * *escape* - escape name of column with `. Some databases reqire it.
   * *value* - fixed column value. You should never delete any of your columns from yaml file. Instead you should set `value: 'Null'`.
+
+### bq-load
+
+Load data from BigQuery from Google Cloud Storage and historize them. Currently only CSV is supported
+
+#### Command
+
+```bash
+luft bq load
+```
+
+#### Command parameters
+
+* `y`, `--yml-path` (mandatory): folder or single yml file inside default tasks folder (see luft.cfg).
+* `-s`, `--start-date`: Start date in format YYYY-MM-DD for executing task in loop. If not specified yesterday date is used.
+* `-e`, `--end-date`: End date in format YYYY-MM-DD for executing task in loop. This day is not included. If not specified today date is used.
+* `-sys`, `--source-system`: override source_system parameter. See description in _Task_ section. Has to be same as name in jdbc.cfg to get right credentials for JDBC database.
+* `-sub`, `--source-subsystem`: override source_subsystem parameter. See description in _Task_ section.
+* `-b`, `--blacklist`: Name of tables/objects to be ignored during processing. E.g. --yml-path gis and -b TEST. It will process all objects in gis folder except object TEST.
+* `-w`, `--whitelist`: Name of tables/objects to be processed. E.g. --yml-path gis and -b TEST. It will process only object TEST.
+
+#### Requirements
+
+* Luft installed :) with BigQuery - `pip install luft[bq]`.
+* Credentials file (usually `service_account.json`) mapped into docker and configured in `luft.cfg`.
+
+#### Yaml file parameters
+
+Inside yaml file, following parameters are supported:
+
+* *name* - Any name you want. Used mainly for name in Airflow UI.
+* *source_system* - only for organizational purposes. In exec has not some special role.
+* *source_subsystem* -  only for organizational purposes. In exec has not some special role.
+* *task_type* - `bq-load` by default but can be overidden. When overriden it is going to be different kind of task :).
+* *thread_name* - applicable only when used with Airflow. Thread name is automatically genereted based on number of threads. If you need this task to have totally different thread you can specify custom thread name.
+    Eg. I have tasks T1, T2, T3, T4 and T5 in my task list. and thread count set to 3. By default (if no task has _thread_name_ specified) it will look like this in Airflow:
+
+    ```text
+    |T1| -> |T4|
+    |T2| -> |T5|
+    |T3|
+    ```
+
+    When I specify any _thread_name_ in task T4:
+
+    ```text
+    |T1| -> |T5|
+    |T2|
+    |T3|
+    |T4|
+    ```
+
+* *color* - applicable only when used with Airflow. Hex color of Task in Airflow. If not specified `#03A0F3` is used.
+* *project_id* = BigQuery project id. Default from `luft.cfg`.
+* *location* = BigQuery location. Default from `location.cfg`.
+* *columns* - list of columns to download. Column parameters:
+  * *name* - column name.
+  * *type* - column type.
+  * *mandatory* - wheter column is mandatory. Default false.
+  * *pk* - wheter column is primary key. Default false.
+  * *escape* - escape name of column with `. Some databases reqire it.
+  * *value* - fixed column value. You should never delete any of your columns from yaml file. Instead you should set `value: 'Null'`.
+* *dataset_id* - Google BigQuery dataset name. If not specified, source_system name is used. It will be created if does not exists.
+* *path_prefix* - Path prefix (path) on blob storage. You can use following templated fields:
+  * {env} - your environment (DEV/PROD...)
+  * {source_system} - name of source system (whatever you like) - in case of jdbc it is usually friendly name of db
+  * {source_subsystem} - name of source subsystem (whatever you like) - in case of jdbc it is schema name
+  * {name} - name of table
+  * {date_valid} - date of valid of export
+  * {time_valid} - time valid of export
+* *skip_leading_rows* - whether first row of CSV should be considered header and not loaded. Default True.
+* *field_delimiter* - how the fields are delimited. Default '\t' (tab).
+* *disable_check* - by default, the check for number of loader rows into stage schema is enabled. If no data are loaded the error will appear. 
+If you need to disable this check, set this flag to True. Default False.
+
+
+---------
 
 ### bq-exec
 

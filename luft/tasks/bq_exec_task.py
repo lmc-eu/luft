@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Union
 
 from google.cloud import bigquery
+from google.cloud.exceptions import NotFound
 from google.oauth2.service_account import Credentials
 
 from jinja2 import Template
@@ -22,9 +23,9 @@ class BQExecTask(GenericTask):
     """BQ exec Task."""
 
     def __init__(self, name: str, task_type: str, source_system: str, source_subsystem: str,
-                 sql_folder: str, sql_files: List[str], project_id: NoneStr = None,
-                 location: NoneStr = None, yaml_file: NoneStr = None, env: NoneStr = None,
-                 thread_name: NoneStr = None, color: NoneStr = None):
+                 sql_folder: NoneStr = None, sql_files: Union[List[str], None] = None,
+                 project_id: NoneStr = None, location: NoneStr = None, yaml_file: NoneStr = None,
+                 env: NoneStr = None, thread_name: NoneStr = None, color: NoneStr = None):
         """Initialize BigQuery JDBC Task.
 
         Attributes:
@@ -39,12 +40,11 @@ class BQExecTask(GenericTask):
             color (str): hex code of color. Airflow operator will have this color.
 
         """
-        self.sql_folder = sql_folder
-        self.sql_files = sql_files
+        self.sql_folder = sql_folder or ''
+        self.sql_files = sql_files or ['']
         self.bq_project_id = self._get_project_id(project_id)
         self.bq_location = self._get_location(location)
         self.bq_client = self._init_bq_client()  # Initialize BQ client
-        self.exec_scripts = self._prepare_scripts()
         super().__init__(name=name, task_type=task_type,
                          source_system=source_system,
                          source_subsystem=source_subsystem,
@@ -59,7 +59,7 @@ class BQExecTask(GenericTask):
 
         """
         env_vars = self.get_env_vars(ts, env)
-        self._run_bq_command(env_vars=env_vars)
+        self._run_bq_command(self.sql_folder, self.sql_files, env_vars)
 
     def get_env_vars(self, ts: str, env: NoneStr = None) -> Dict[str, str]:
         """Get Docker enviromental variables."""
@@ -76,11 +76,12 @@ class BQExecTask(GenericTask):
         """Return BigQuery client."""
         return self.bq_client
 
-    def _prepare_scripts(self):
+    def _prepare_scripts(self, sql_folder: str, sql_files: List[str]):
         scripts = []
-        for script in self.sql_files:
-            scripts.append(Path(self.sql_folder) / script)
-        return scripts
+        if len(sql_files) > 0:
+            for script in sql_files:
+                scripts.append(Path(sql_folder) / script)
+            return scripts
 
     def _init_bq_client(self) -> bigquery.Client:
         """Init BigQuery client."""
@@ -99,9 +100,11 @@ class BQExecTask(GenericTask):
         self.check_mandatory({'BQ_LOCATION': bq_location})
         return bq_location
 
-    def _get_sql_commands(self, env_vars: NoneDict = None):
+    def _get_sql_commands(self, sql_folder: str, sql_files: List[str],
+                          env_vars: NoneDict = None):
+        exec_scripts = self._prepare_scripts(sql_folder, sql_files)
         cmds: List[str] = []
-        for file_path in self.exec_scripts:
+        for file_path in exec_scripts:
             if file_path.exists():
                 with open(file_path) as file_:
                     template = Template(file_.read())
@@ -115,9 +118,39 @@ class BQExecTask(GenericTask):
                 raise FileNotFoundError(f'File `{file_}` does not exist.')
         return cmds
 
-    def _run_bq_command(self, env_vars: NoneDict = None):
+    def _create_dataset(self, dataset_id: str):
+        """Create dataset.
+
+        Parameters:
+            dataset_id (str): identifier of dataset.
+
+        """
+        if not self._dataset_exists(dataset_id):
+            dataset_id = f'{self.bq_client.project}.{dataset_id}'
+            dataset = bigquery.Dataset(dataset_id)
+            dataset.location = self.bq_location
+            dataset = self.bq_client.create_dataset(dataset)
+            logger.info(f'Dataset {dataset_id} has been created.')
+
+    def _dataset_exists(self, dataset_id: str) -> bool:
+        """Check if dataset exits.
+
+        Parameters:
+            dataset_id (str): identifier of dataset.
+
+        """
+        try:
+            self.bq_client.get_dataset(dataset_id)
+            logger.info(f'Dataset {dataset_id} already exists.')
+            return True
+        except NotFound:
+            logger.info(f'Dataset {dataset_id} does not exist.')
+            return False
+
+    def _run_bq_command(self, sql_folder: str, sql_files: List[str],
+                        env_vars: NoneDict = None):
         """Run BigQuery command."""
-        queries = self._get_sql_commands(env_vars)
+        queries = self._get_sql_commands(sql_folder, sql_files, env_vars)
         for query in queries:
             query_job = self.bq_client.query(
                 query,

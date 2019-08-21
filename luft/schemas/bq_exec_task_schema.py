@@ -9,7 +9,7 @@ from marshmallow import fields, post_load
 class BQExecTaskSchema(GenericTaskSchema):
     """BigQuery Exec Task Schema."""
 
-    color = fields.Str(missing='#73DBF5')
+    color = fields.Str(missing='#4384F7')
     sql_folder = fields.Str(required=True)
     sql_files = fields.List(fields.Str(), required=True)
     project_id = fields.Str()

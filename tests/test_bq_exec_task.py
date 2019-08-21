@@ -11,6 +11,7 @@ def bq_exec_task():
     jdbc_task = BQExecTask(name='Test',
                            task_type='bq-exec',
                            source_system='bq', source_subsystem='exec',
+                           location='US',
                            sql_folder='example/sql/', sql_files=['bq.sql']
                            )
     return jdbc_task

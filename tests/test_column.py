@@ -234,32 +234,34 @@ def test_should_return_ignor_tech_nonpk(columns):
 @pytest.mark.unit
 def test_get_index(columns):
     """Test that indexing for Snowflake load is ok."""
-    assert columns[0].get_index() == '$1 AS PRIMARY_KEY1'
-    assert columns[4].get_index() == '$5 AS GDPR'
+    assert columns[0].get_index() == '$1 AS Primary_Key1'
+    assert columns[4].get_index() == '$5 AS gdpr'
     assert columns[9].get_index() is None
 
 
 @pytest.mark.unit
 def test_get_name(columns):
     """Column name is uppercased name or rename."""
-    assert columns[1].get_name() == 'PRIMARY_KEY2'
+    assert columns[1].get_name() == 'Primary_Key2'
     assert columns[5].get_name() is None
 
 
 @pytest.mark.unit
 def test_get_aliased_name(columns):
     """Aliased is name or value AS rename or name."""
-    assert columns[1].get_aliased_name() == 'PK2 AS PRIMARY_KEY2'
-    assert columns[3].get_aliased_name() == '23 AS DEFAULT'
+    assert columns[1].get_aliased_name() == 'PK2 AS Primary_Key2'
+    assert columns[3].get_aliased_name() == '23 AS Default'
     assert columns[5].get_aliased_name() is None
 
 
 @pytest.mark.unit
 def test_get_def(columns):
     """Definition is only valid and has mandatory suffix."""
-    assert columns[1].get_def() == 'PRIMARY_KEY2 STRING(32) NOT NULL'
-    assert columns[3].get_def() == 'DEFAULT NUMBER(32)'
-    assert columns[4].get_def() == 'GDPR NUMBER(32)'
+    assert columns[1].get_def(
+        supported_types=['STRING']) == 'Primary_Key2 STRING NOT NULL'
+    assert columns[3].get_def(
+        supported_types=['NUMBER']) == 'Default NUMBER'
+    assert columns[4].get_def(supported_types=['NUMBER']) == 'gdpr NUMBER'
     with pytest.raises(TypeError):
         assert columns[-1].get_def()
 
@@ -268,18 +270,18 @@ def test_get_def(columns):
 def test_get_coalesce(columns):
     """Coalesce is different for pk and non pk columns."""
     assert columns[1].get_coalesce(
-    ) == 'COALESCE(s.PRIMARY_KEY2, t.PRIMARY_KEY2) AS PRIMARY_KEY2'
-    assert columns[3].get_coalesce() == 'CASE WHEN s.DW_LOAD_DATE IS NOT NULL THEN s.DEFAULT ' \
-                                        'ELSE t.DEFAULT END AS DEFAULT'
+    ) == 'COALESCE(s.Primary_Key2, t.Primary_Key2) AS Primary_Key2'
+    assert columns[3].get_coalesce() == 'CASE WHEN s.DW_LOAD_DATE IS NOT NULL THEN s.Default ' \
+                                        'ELSE t.Default END AS Default'
     assert columns[4].get_coalesce(
-    ) == 'CASE WHEN s.DW_LOAD_DATE IS NOT NULL THEN s.GDPR ELSE t.GDPR END AS GDPR'
+    ) == 'CASE WHEN s.DW_LOAD_DATE IS NOT NULL THEN s.gdpr ELSE t.gdpr END AS gdpr'
 
 
 @pytest.mark.unit
 def test_get_join(columns):
     """Test that joining condition is always with rename."""
-    assert columns[0].get_join() == 's.PRIMARY_KEY1 = t.PRIMARY_KEY1'
-    assert columns[4].get_join() == 's.GDPR = t.GDPR'
+    assert columns[0].get_join() == 's.Primary_Key1 = t.Primary_Key1'
+    assert columns[4].get_join() == 's.gdpr = t.gdpr'
     assert columns[6].get_join() is None
 
 
@@ -296,9 +298,9 @@ def test_get_value(columns):
 def test_embulk_column_option(columns):
     """Test snowflake to embulk mapping works well."""
     assert columns[0].get_embulk_column_option(
-    ) == 'PRIMARY_KEY1: {value_type: string}'
+    ) == 'Primary_Key1: {value_type: string}'
     assert columns[2].get_embulk_column_option(
-    ) == 'ESCAPED: {value_type: long}'
+    ) == 'Escaped: {value_type: long}'
     with pytest.raises(TypeError):
         assert columns[-1].get_embulk_column_option()
 

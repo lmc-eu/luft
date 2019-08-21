@@ -66,6 +66,9 @@ BQ_LOCATION = os.getenv(
     'BQ_LOCATION', get_cfg('bq', 'location'))
 BQ_JOB_ID_PREFIX = os.getenv(
     'BQ_JOB_ID_PREFIX', get_cfg('bq', 'job_id_prefix'))
+BQ_HIST_DEFAULT_TEMPLATE = get_cfg('bq', 'default_history_template')
+BQ_STAGE_DEFAULT_TEMPLATE = get_cfg('bq', 'default_stage_template')
+BQ_STAGE_SCHEMA_FORM = get_cfg('bq', 'stage_schema_form')
 
 # GCS
 GCS_BUCKET = os.getenv('GCS_BUCKET', get_cfg('gcs', 'bucket'))
@@ -119,6 +122,8 @@ TASK_TYPE_MAPPER = conf['task_type_map']
 # Embulk
 EMBULK_COMMAND = os.getenv('EMBULK_COMMAND', get_cfg(
     'embulk', 'embulk_command')).split()
+EMBULK_LOG_LEVEL = os.getenv('EMBULK_LOG_LEVEL', get_cfg(
+    'embulk', 'embulk_log_level'))
 
 # Embulk Default Template
 EMBULK_DEFAULT_TEMPLATE = conf['embulk_default_template']
@@ -134,5 +139,7 @@ THREAD_NAME_PREFIX = get_cfg('thread', 'thread_prefix')
 JDBC_DRIVER_PATH = conf['jdbc_driver_path']
 
 # Supported data types
-SUPPORTED_DATA_TYPES = get_cfg(
-    'data_type', 'supported_data_types').split()
+SNOWFLAKE_DATA_TYPES = get_cfg(
+    'data_type', 'snowflake').split()
+BQ_DATA_TYPES = get_cfg(
+    'data_type', 'bq').split()

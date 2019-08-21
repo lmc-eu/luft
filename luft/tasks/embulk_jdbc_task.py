@@ -4,7 +4,8 @@ import os
 from typing import Dict, List
 
 from luft.common.column import Column
-from luft.common.config import EMBULK_COMMAND, JDBC_CONFIG, JDBC_DRIVER_PATH, PATH_PREFIX
+from luft.common.config import (
+    EMBULK_COMMAND, EMBULK_LOG_LEVEL, JDBC_CONFIG, JDBC_DRIVER_PATH, PATH_PREFIX)
 from luft.common.utils import NoneStr, get_path_prefix, read_config, setup_logger
 from luft.tasks.generic_embulk_task import GenericEmbulkTask
 
@@ -16,7 +17,7 @@ class EmbulkJdbcTask(GenericEmbulkTask):
     """Embulk JDBC Task."""
 
     def __init__(self, name: str, task_type: str, source_system: str, source_subsystem: str,
-                 columns: List[Column], historize: bool = False, fetch_rows: int = 10000,
+                 columns: List[Column], fetch_rows: int = 10000,
                  source_table: NoneStr = None, where_clause: NoneStr = None,
                  embulk_template: NoneStr = None, path_prefix: NoneStr = None,
                  yaml_file: NoneStr = None, env: NoneStr = None, thread_name: NoneStr = None,
@@ -38,7 +39,6 @@ class EmbulkJdbcTask(GenericEmbulkTask):
         self.columns = columns
         self.path_prefix = path_prefix
         self.embulk_template = embulk_template
-        self.historize = historize
         self.fetch_rows = fetch_rows
         self.source_table = source_table
         self.where_clause = where_clause
@@ -68,7 +68,7 @@ class EmbulkJdbcTask(GenericEmbulkTask):
     def get_command_args(self) -> List[str]:
         """Get Docker command arguments for running Embulk."""
         self._set_embulk_template(self.embulk_template)
-        return ['run', self.embulk_template, '-l', 'debug']
+        return ['run', self.embulk_template, '-l', EMBULK_LOG_LEVEL]
 
     def get_env_vars(self, ts: str, env: NoneStr = None) -> Dict[str, str]:
         """Get Docker enviromental variables."""

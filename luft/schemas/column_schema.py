@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """Column Schema."""
 from luft.common.column import Column
-from luft.common.config import SUPPORTED_DATA_TYPES
 
-from marshmallow import Schema, ValidationError, fields, post_load, validates
+from marshmallow import Schema, ValidationError, fields, post_load
 
 
 class GDPRKeyField(fields.Field):
@@ -32,14 +31,6 @@ class ColumnSchema(Schema):
     ignore = fields.Boolean(attribute='ignored', default=False)
     tech_column = fields.Boolean(default=False)
     json_path = fields.Str()
-
-    @validates('type')
-    def _validates_type(self, data):
-        """Validate type is in supported data types."""
-        clean_data_type = data.split('(')[0].upper()
-        if clean_data_type not in SUPPORTED_DATA_TYPES:
-            raise ValidationError(
-                'Value %s is not supported. Please change it!' % data)
 
     @post_load
     def _create_column(self, data, **kwargs):
