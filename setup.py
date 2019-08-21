@@ -110,7 +110,7 @@ def do_setup():
 
         packages=find_packages(exclude=['tests*', 'docs*']),
         python_requires='>=3.6, <4',
-        package_data={'luft': ['templates/embulk/*.*']},
+        include_package_data=True,
 
         entry_points={
             'console_scripts': [
