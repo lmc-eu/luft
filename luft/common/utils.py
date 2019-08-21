@@ -2,7 +2,7 @@
 """Common utils."""
 import importlib
 import os
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -89,10 +89,10 @@ def _get_path_part(path: str, part: str) -> Optional[str]:
         return None
 
 
-def read_config(config_file: str) -> SafeConfigParser:
+def read_config(config_file: str) -> ConfigParser:
     """Read configuration."""
     if Path(config_file).exists():
-        cfg = SafeConfigParser(allow_no_value=True)
+        cfg = ConfigParser(allow_no_value=True)
         cfg.read(config_file)
         return cfg
     else:
