@@ -5,6 +5,7 @@ FROM ubuntu:bionic
 ENV EMBULK_VERSION=0.9.7 \
     EMBULK_GEM=' \
       embulk-input-mysql \
+      embulk-input-postgresql \
       embulk-output-s3 \
       embulk-output-gcs \
     ' \
