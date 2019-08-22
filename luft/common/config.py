@@ -100,7 +100,8 @@ QLIK_CLOUD_USER = os.getenv(
     'QLIK_CLOUD_USER', get_cfg('qlik_cloud', 'user'))
 QLIK_CLOUD_PASS = os.getenv(
     'QLIK_CLOUD_PASS', get_cfg('qlik_cloud', 'password'))
-QLIK_CLOUD_HEADLESS = False if get_cfg(
+QLIK_CLOUD_HEADLESS = False if not get_cfg(
+    'qlik_cloud', 'headless') or get_cfg(
     'qlik_cloud', 'headless').lower() == 'false' else True
 
 # Qlik Enterprise Server
