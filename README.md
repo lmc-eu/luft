@@ -198,6 +198,7 @@ Inside yaml file, following parameters are supported:
   * {date_valid} - date of valid of export
   * {time_valid} - time valid of export
 * *skip_leading_rows* - whether first row of CSV should be considered header and not loaded. Default True.
+* *allow_quoted_newlines* - quoted data sections that contain newline characters in a CSV file are allowed. Defaults to True.
 * *field_delimiter* - how the fields are delimited. Default '\t' (tab).
 * *disable_check* - by default, the check for number of loader rows into stage schema is enabled. If no data are loaded the error will appear. 
 If you need to disable this check, set this flag to True. Default False.

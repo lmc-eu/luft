@@ -16,6 +16,7 @@ class BQLoadTaskSchema(GenericTaskSchema):
     location = fields.Str()
     dataset_id = fields.Str()
     skip_leading_rows = fields.Boolean(missing=True)
+    allow_quoted_newlines = fields.Boolean(missing=True)
     field_delimiter = fields.Str(missing='\t')
     disable_check = fields.Boolean(missing=False)
     path_prefix = fields.Str()

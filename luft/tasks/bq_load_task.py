@@ -25,8 +25,9 @@ class BQLoadTask(BQExecTask):
     def __init__(self, name: str, task_type: str, source_system: str, source_subsystem: str,
                  columns: List[Column], project_id: NoneStr = None, location: NoneStr = None,
                  dataset_id: NoneStr = None, skip_leading_rows: bool = True,
-                 disable_check: bool = False, field_delimiter: str = '\t',
-                 path_prefix: NoneStr = None, yaml_file: NoneStr = None, env: NoneStr = None,
+                 allow_quoted_newlines: bool = True, disable_check: bool = False,
+                 field_delimiter: str = '\t', path_prefix: NoneStr = None,
+                 yaml_file: NoneStr = None, env: NoneStr = None,
                  thread_name: NoneStr = None, color: NoneStr = None):
         """Initialize BigQuery Load Task.
 
@@ -45,6 +46,7 @@ class BQLoadTask(BQExecTask):
         self.columns = columns
         self.path_prefix = path_prefix or PATH_PREFIX
         self.skip_leading_rows = skip_leading_rows
+        self.allow_quoted_newlines = allow_quoted_newlines
         self.field_delimiter = field_delimiter
         self.disable_check = disable_check
         self.dataset_id = dataset_id or source_system
@@ -165,6 +167,7 @@ class BQLoadTask(BQExecTask):
         """Load CSV."""
         job_config = bigquery.LoadJobConfig()
         job_config.skip_leading_rows = int(self.skip_leading_rows)
+        job_config.allow_quoted_newlines = self.allow_quoted_newlines
         job_config.field_delimiter = self.field_delimiter
         # The source format defaults to CSV, so the line below is optional.
         job_config.source_format = bigquery.SourceFormat.CSV
