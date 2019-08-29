@@ -56,6 +56,7 @@ class QlikCloud(GenericTask):
 
         options = Options()  # Chrome options
         options.headless = QLIK_CLOUD_HEADLESS  # Run headless
+        options.add_argument('--no-sandbox')
         self.browser = webdriver.Chrome(chrome_options=options)  # Browser
 
         super().__init__(name=name, task_type=task_type,
