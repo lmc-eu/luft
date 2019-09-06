@@ -102,7 +102,7 @@ class TaskList:
                 if isinstance(task, list):  # if yaml contains multiple definitions
                     self._separate_tasks(task, yml_path, task_list_def)
                 else:
-                    self._add_yaml_file_loc(task, yml_file)
+                    self._add_yaml_file_loc(task, yml_path)
                     task_list_def.append(task)
             else:
                 raise TypeError(
