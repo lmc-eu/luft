@@ -2,12 +2,13 @@ FROM ubuntu:bionic
 
 
 # Embulk variables
-ENV EMBULK_VERSION=0.9.7 \
+ENV EMBULK_VERSION=0.9.18 \
     EMBULK_GEM=' \
       embulk-input-mysql \
       embulk-input-postgresql \
       embulk-output-s3 \
       embulk-output-gcs \
+      embulk-output-parquet \
     ' \
     NONEMBULK_GEM=' \
       httpclient \
@@ -53,5 +54,5 @@ WORKDIR /work
 # Install luft
 RUN pip3 install -e ".[bq]" 
 
-ENTRYPOINT ["luft"]
+# ENTRYPOINT ["luft"]
 CMD ["--help"]
