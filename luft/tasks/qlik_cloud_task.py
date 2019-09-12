@@ -129,6 +129,7 @@ class QlikCloud(GenericTask):
         search_str (string): name of application to find.
 
         """
+        self._wait(1)
         obj_list = self.browser.find_elements_by_xpath(
             f'//div[@title="{search_str}"]')
         return obj_list
