@@ -129,7 +129,11 @@ class QlikCloud(GenericTask):
         search_str (string): name of application to find.
 
         """
-        self._wait()
+        try:
+            WebDriverWait(self.browser, int(QLIK_CLOUD_DELAY)).until(
+                exp.presence_of_element_located((By.XPATH, f'//div[@title="{search_str}"]')))
+        except TimeoutException:
+            logger.error('Waiting timouted')
         obj_list = self.browser.find_elements_by_xpath(
             f'//div[@title="{search_str}"]')
         return obj_list
@@ -309,7 +313,6 @@ class QlikCloud(GenericTask):
         """Publish applications to stream."""
         for app_def in apps:
             # Get application webelement
-            self._wait(1)
             app_name = app_def.get('name')
             apps_publish = self._find_apps(app_name)
             if len(apps_publish) != 1:
@@ -317,6 +320,7 @@ class QlikCloud(GenericTask):
                     f'There is multiple instances of {app_name}'
                     f'[{len(apps_publish)}].')
             app = apps_publish[0]
+            self._wait()
             # Right click on app and select publish
             self._right_click_app(app)
             self.browser.find_element_by_id('publish').click()
