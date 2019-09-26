@@ -341,6 +341,36 @@ class QlikCloud(GenericTask):
             logger.info(f'App {app_name} is published.')
             self._wait(4)
 
+    def _open_apps(self, apps: List[Dict[str, str]]):
+        """Open applications because of thumbnail."""
+        self._switch_account(self.account_id)
+        for app_def in apps:
+            # Get application webelement
+            app_name = app_def.get('name')
+            apps_publish = self._find_apps(app_name)
+            if len(apps_publish) != 1:
+                raise ValueError(
+                    f'There is multiple instances of {app_name}'
+                    f'[{len(apps_publish)}].')
+            app = apps_publish[0]
+            self._wait()
+            ff = app.find_element_by_xpath(
+                '../../../div[@class="item-menu--container"]')
+            ff.click()
+            self._wait()
+            self.browser.switch_to.window(self.browser.window_handles[1])
+            self._wait()
+            try:
+                WebDriverWait(self.browser, 120).until(exp.presence_of_all_elements_located(
+                    (By.XPATH, '//div[contains(@class, "app-open") and contains(@class, "ng-hide")]'
+                     )))
+                logger.info(f'App {app_name} is was opened.')
+            except TimeoutException:
+                logger.error('App opening has timeouted.')
+            self._wait(2)
+            self.browser.close()
+            self.browser.switch_to.window(self.browser.window_handles[0])
+
     def update_apps(self):
         """Export, delete old app, upload new one and publish an app."""
         logger.info(f'Updating applications.')
@@ -356,6 +386,7 @@ class QlikCloud(GenericTask):
         self._upload_apps(app_files)
         self._check_apps(app_name_list)
         self._publish_apps(self.apps)
+        self._open_apps(self.apps)
         t1 = time.time()
         total = round((t1 - t0), 2)
         logger.info(f'It took {total} secs.')
