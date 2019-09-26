@@ -184,5 +184,4 @@ def filter_script_list(task_list, whitelist, blacklist):
 
 
 if __name__ == '__main__':
-    load(['-y', 'world'])
     luft(obj={})
