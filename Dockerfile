@@ -54,5 +54,5 @@ WORKDIR /work
 # Install luft
 RUN pip3 install -e ".[bq]" 
 
-# ENTRYPOINT ["luft"]
+ENTRYPOINT ["luft"]
 CMD ["--help"]
