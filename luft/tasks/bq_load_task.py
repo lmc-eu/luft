@@ -159,7 +159,7 @@ class BQLoadTask(BQExecTask):
                     - nonpk - only nonprimary keys are returned.
 
         """
-        cols = [f'IFNULL(CAST({col.get_name("all", include_tech=False)} AS STRING), \'\'),\'_\'' for col
+        cols = [f'IFNULL(TO_JSON_STRING({col.get_name("all", include_tech=False)}), \'\')' for col
                 in self.columns if col.get_name('all', include_tech=False)]
         return ', '.join(cols)
 

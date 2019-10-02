@@ -42,7 +42,7 @@ MERGE INTO {{ HISTORY_SCHEMA }}.{{ TABLE_NAME }} t
             FROM (
                 -- We need unique columns
                 SELECT DISTINCT
-                    {{ PK }}{{ ',' if PK and PK|length else '' }}
+                    {{ PK }}{{ ',' if PK and COLUMNS and PK|length else '' }}
                     {{ COLUMNS }}
                 FROM {{ STAGE_SCHEMA }}.{{ TABLE_NAME }}
               ) i
