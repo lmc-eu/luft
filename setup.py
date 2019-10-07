@@ -35,7 +35,7 @@ extras_require = {
     'dev': [],
     'bq': ['google-cloud-bigquery==1.18.0'],
     'qlik-cloud': ['selenium==3.141.0'],
-    'qlik-metric': ['boto3==1.9.242'],
+    'qlik-metric': ['boto3==1.9.242', 'websocket_client==0.56.0'],
 }
 
 # requirements file
