@@ -40,7 +40,7 @@ class GenericTask(ABC):
         self.source_system = source_system
         self.source_subsystem = source_subsystem
         self.yaml_file = yaml_file
-        self.env = env
+        self.env = env or ENV
         self.thread_name = thread_name
         self.color = color
         self.task_id = ''

@@ -1,0 +1,10 @@
+name: LMC
+app_id: e0c64bbd-50b3-4bc0-a404-47ae80b020a6
+dimensions:
+  - D.Date
+measures:
+  - '# Applications'
+selections:
+  - D.Date: 
+    - '{date_valid}'
+

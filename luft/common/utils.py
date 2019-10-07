@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Common utils."""
+from datetime import datetime
 import importlib
 import os
 from configparser import ConfigParser
@@ -29,7 +30,7 @@ def class_for_name(path: str) -> Any:
     return c
 
 
-def ts_to_tz(ts: str) -> str:
+def ts_to_tz(ts: str) -> datetime:
     """Convert timestamp to timezone aware timestamp."""
     local_tz = pendulum.timezone(os.getenv('DEFAULT_TIMEZONE', 'UTC'))
     tz = dateutil.parser.parse(ts)
