@@ -352,6 +352,64 @@ Inside yaml file, following parameters are supported:
   * *qse_id*: Qlik Sense Enterprise application id.
   * *qsc_stream*: Qlik Sense Cloud stream name.
 
+### qlik-metric-load
+
+Load data from Qlik metric, convert them to json and upload to blob storage.
+
+#### Command
+
+```bash
+luft qlik-metric load
+```
+
+#### Command parameters
+
+* `y`, `--yml-path` (mandatory): folder or single yml file inside default tasks folder (see luft.cfg).
+* `-s`, `--start-date`: Start date in format YYYY-MM-DD for executing task in loop. If not specified yesterday date is used.
+* `-e`, `--end-date`: End date in format YYYY-MM-DD for executing task in loop. This day is not included. If not specified today date is used.
+* `-sys`, `--source-system`: override source_system parameter. See description in _Task_ section. Has to be same as name in jdbc.cfg to get right credentials for JDBC database.
+* `-sub`, `--source-subsystem`: override source_subsystem parameter. See description in _Task_ section.
+* `-b`, `--blacklist`: Name of tables/objects to be ignored during processing. E.g. --yml-path gis and -b TEST. It will process all objects in gis folder except object TEST.
+* `-w`, `--whitelist`: Name of tables/objects to be processed. E.g. --yml-path gis and -b TEST. It will process only object TEST.
+
+#### Requirements
+
+* Luft installed :) with Qlik Sense CLoud - `pip install luft[qlik-metric]`.
+* Credentials files (`client_key.pem`, `client.pem` and `root.pem`) mapped into docker and configured in `luft.cfg` in `[qlik_enterprise]` section.
+* Set all other configs in `luft.cfg` in sections `[qlik_enterprise]`.
+
+#### Yaml file parameters
+
+Inside yaml file, following parameters are supported:
+
+* *name* - Any name you want. Used mainly for name in Airflow UI.
+* *source_system* - only for organizational purposes. In exec has not some special role.
+* *source_subsystem* -  only for organizational purposes. In exec has not some special role.
+* *task_type* - `bq-load` by default but can be overidden. When overriden it is going to be different kind of task :).
+* *thread_name* - applicable only when used with Airflow. Thread name is automatically genereted based on number of threads. If you need this task to have totally different thread you can specify custom thread name.
+    Eg. I have tasks T1, T2, T3, T4 and T5 in my task list. and thread count set to 3. By default (if no task has _thread_name_ specified) it will look like this in Airflow:
+
+    ```text
+    |T1| -> |T4|
+    |T2| -> |T5|
+    |T3|
+    ```
+
+    When I specify any _thread_name_ in task T4:
+
+    ```text
+    |T1| -> |T5|
+    |T2|
+    |T3|
+    |T4|
+    ```
+
+* *color* - applicable only when used with Airflow. Hex color of Task in Airflow. If not specified `#009845` is used.
+* *app_id* - Qlik application id.
+* *dimensions* - list. List of field names.
+* *measures* - list. List of Master Measure names.
+* *selections* - List of selection dictionaries to filter data.
+
 ## Running example
 
 ### 1. Creating `luft.cfg`

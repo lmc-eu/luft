@@ -44,12 +44,15 @@ class QlikMetric(GenericTask):
         color (str): hex code of color. Airflow operator will have this color.
 
         """
-        self.engine = self.qlik_login()
         self.app_id = app_id
         self.dimensions = dimensions
         self.measures = measures
         self.selections = selections
         self.date_valid = None
+
+        self.engine = self.qlik_login()
+        self.app = self.engine.open_app(self.app_id)
+        self.app_handle = self.engine.ega.get_handle(self.app)
 
         super().__init__(name=name, task_type=task_type,
                          source_system=source_system,
@@ -142,7 +145,7 @@ class QlikMetric(GenericTask):
             }
         }
         session_obj = self.engine.eaa.create_session_object(
-            self.engine.app_handle, params)
+            self.app_handle, params)
         app_layout = self.engine.egoa.get_layout(
             session_obj.get('qReturn').get('qHandle'))
         for item in app_layout.get('qLayout').get('qMeasureList').get('qItems'):
@@ -195,8 +198,6 @@ class QlikMetric(GenericTask):
         """
         # Open application
         logger.info(f'Opening app: {self.app_id}')
-        app = self.engine.open_app(self.app_id)
-        handle = self.engine.ega.get_handle(app)
         measure_dict = self.get_measures()
         logger.info(f'Getting measures: {measure_dict}')
         conn = self.engine.get_connection()
@@ -204,7 +205,7 @@ class QlikMetric(GenericTask):
         logger.info(f'Selecting_values: {select_dict}')
         logger.info(f'Creating hypercube.')
         qlik_data = engine_helper.get_hypercube_data(
-            conn, handle, measure_dict, self.dimensions, select_dict, self.date_valid)
+            conn, self.app_handle, measure_dict, self.dimensions, select_dict, self.date_valid)
         self.engine.disconnect()
         logger.info(f'Engine disconnected.')
         return qlik_data
