@@ -89,8 +89,8 @@ class BQLoadTask(BQExecTask):
         super_env_dict = super().get_env_vars(ts=ts, env=env)
         env_dict = {
             'TABLE_NAME': self.name,
-            'STAGE_SCHEMA': f'stage_{self.source_system.lower()}',
-            'HISTORY_SCHEMA': self.source_system.lower(),
+            'STAGE_SCHEMA': f'{self.source_system.lower()}_{self.source_subsystem.lower()}_staging',
+            'HISTORY_SCHEMA': f'{self.source_system.lower()}_{self.source_subsystem.lower()}_history',
             'PK': self._get_col_names('pk'),
             'PK_DEFINITION_LIST': self._get_col_defs('pk'),
             'COLUMNS': self._get_col_names('nonpk'),
