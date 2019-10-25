@@ -8,7 +8,7 @@ from google.cloud import bigquery
 from luft.common.column import Column
 from luft.common.config import (
     BQ_DATA_TYPES, BQ_HIST_DEFAULT_TEMPLATE, BQ_STAGE_DEFAULT_TEMPLATE,
-    BQ_STAGE_SCHEMA_FORM, GCS_BUCKET, PATH_PREFIX)
+    BQ_STAGE_SCHEMA_FORM, BQ_HIST_SCHEMA_FORM, GCS_BUCKET, PATH_PREFIX)
 from luft.common.logger import setup_logger
 from luft.common.utils import NoneStr, get_path_prefix
 from luft.tasks.bq_exec_task import BQExecTask
@@ -56,6 +56,13 @@ class BQLoadTask(BQExecTask):
             source_subsystem=self.get_source_subsystem,
             dataset_id=self.dataset_id
         )
+        self.hist_dataset_id = BQ_HIST_SCHEMA_FORM.format(
+            env=self.get_env,
+            source_system=self.get_source_system,
+            source_subsystem=self.get_source_subsystem,
+            dataset_id=self.dataset_id
+        )
+
         super().__init__(name=name, task_type=task_type,
                          source_system=source_system,
                          source_subsystem=source_subsystem,
@@ -80,7 +87,7 @@ class BQLoadTask(BQExecTask):
         self._run_bq_command(stage_template.parent, [stage_template.name],
                              env_vars)
         self.load_csv()
-        self._create_dataset(self.dataset_id)
+        self._create_dataset(self.hist_dataset_id)
         self._run_bq_command(hist_template.parent, [hist_template.name],
                              env_vars)
 
@@ -89,8 +96,8 @@ class BQLoadTask(BQExecTask):
         super_env_dict = super().get_env_vars(ts=ts, env=env)
         env_dict = {
             'TABLE_NAME': self.name,
-            'STAGE_SCHEMA': f'{self.source_system.lower()}_{self.source_subsystem.lower()}_staging',
-            'HISTORY_SCHEMA': f'{self.source_system.lower()}_{self.source_subsystem.lower()}_history',
+            'STAGE_SCHEMA': self.stage_dataset_id,
+            'HISTORY_SCHEMA': self.hist_dataset_id,
             'PK': self._get_col_names('pk'),
             'PK_DEFINITION_LIST': self._get_col_defs('pk'),
             'COLUMNS': self._get_col_names('nonpk'),

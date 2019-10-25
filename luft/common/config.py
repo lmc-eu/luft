@@ -69,6 +69,7 @@ BQ_JOB_ID_PREFIX = os.getenv(
 BQ_HIST_DEFAULT_TEMPLATE = get_cfg('bq', 'default_history_template')
 BQ_STAGE_DEFAULT_TEMPLATE = get_cfg('bq', 'default_stage_template')
 BQ_STAGE_SCHEMA_FORM = get_cfg('bq', 'stage_schema_form')
+BQ_HIST_SCHEMA_FORM = get_cfg('bq', 'hist_schema_form')
 
 # GCS
 GCS_BUCKET = os.getenv('GCS_BUCKET', get_cfg('gcs', 'bucket'))
