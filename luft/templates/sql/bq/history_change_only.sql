@@ -27,17 +27,18 @@ MERGE INTO {{ HISTORY_SCHEMA }}.{{ TABLE_NAME }} t
             -- make sure to add column after Not empty PK
             {{ PK }}{{ ',' if PK and PK|length else '' }}
             -- DW columns
-            current_timestamp                                               AS dw_load_date,
+            current_timestamp AS dw_load_date,
             -- New row has alwas same DW_VALID_FROM and DW_VALID_TO
-            timestamp('{{ DATE_VALID }}')                                        AS dw_valid_from,
-            timestamp('{{ DATE_VALID }}')                                        AS dw_valid_to,
+            timestamp('{{ DATE_VALID }}') AS dw_valid_from,
+            timestamp('{{ DATE_VALID }}') AS dw_valid_to,
+            (SELECT MAX(DW_VALID_TO) FROM {{ HISTORY_SCHEMA }}.{{ TABLE_NAME }}) AS dw_last_load_date,
             -- New row is always current
-            True                                                            AS dw_current_flag,
+            True AS dw_current_flag,
             -- Not implemented
-            'N'                                                             AS dw_gdpr_flag,
-            '{{ SOURCE_SYSTEM }}.{{ SOURCE_SUBSYSTEM }}.{{ TABLE_NAME }}'   AS dw_source,
+            'N' AS dw_gdpr_flag,
+            '{{ SOURCE_SYSTEM }}.{{ SOURCE_SUBSYSTEM }}.{{ TABLE_NAME }}' AS dw_source,
             -- For finding changes
-            FARM_FINGERPRINT(CONCAT({{ HASH_COLUMNS }}))                    AS dw_hash_diff
+            FARM_FINGERPRINT(CONCAT({{ HASH_COLUMNS }})) AS dw_hash_diff
             {{ ',' if COLUMNS and COLUMNS|length else '' }}{{ COLUMNS }}
             FROM (
                 -- We need unique columns
@@ -52,7 +53,7 @@ MERGE INTO {{ HISTORY_SCHEMA }}.{{ TABLE_NAME }} t
         -- and same hashes because we want to compare only same rows
         t.DW_HASH_DIFF = s.DW_HASH_DIFF
         -- and also need compare only last instance (day) with new data
-        AND t.DW_VALID_TO = TIMESTAMP_SUB(s.DW_VALID_TO, INTERVAL 1 DAY))
+        AND t.DW_VALID_TO = s.dw_last_load_date)
     -- if new data is not same as last increment then insert data
     WHEN NOT MATCHED THEN
         INSERT (
