@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Luft cli."""
+import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Union
@@ -62,6 +63,7 @@ def _loop_tasks(task_list, start_date=None, end_date=None):
     for date_valid in _daterange(start, end):
         for task in task_list:
             task(ts=date_valid)
+            time.sleep(2)
             click.secho(f'Task `{task.get_task_id()}` is done!', fg='green')
 
 
@@ -168,6 +170,27 @@ def upload(ctx: click.core.Context, yml_path: str, start_date: str,  # start_tim
                               source_system=source_system, source_subsystem=source_subsystem,
                               blacklist=blacklist, whitelist=whitelist, glob_filter=glob_filter)
     _loop_tasks(task_list, start_date, end_date)
+
+
+@luft.group(help='Tools for working with Elasticsearch sources.')
+@click.pass_context
+def es(_ctx: click.core.Context):
+    """Tools for working with Elasticsearch."""
+    pass
+
+
+@es.command(help='Load data from elasticsearch into blob storage.')
+@add_options(task_list_options)
+@click.pass_context
+def load(ctx: click.core.Context, yml_path: str, start_date: str,  # start_time: str,
+         end_date: str, source_system: str, source_subsystem: str, blacklist: List[str],
+         whitelist: List[str], glob_filter: str):
+    """Load data from jdbc source into blob storage."""
+    task_list = _create_tasks(task_type='embulk-es-load', yml_path=yml_path,
+                              source_system=source_system, source_subsystem=source_subsystem,
+                              blacklist=blacklist, whitelist=whitelist, glob_filter=glob_filter)
+    _loop_tasks(task_list, start_date, end_date)
+
 
 
 def filter_script_list(task_list, whitelist, blacklist):

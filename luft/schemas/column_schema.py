@@ -31,6 +31,7 @@ class ColumnSchema(Schema):
     ignore = fields.Boolean(attribute='ignored', default=False)
     tech_column = fields.Boolean(default=False)
     json_path = fields.Str()
+    metadata = fields.Boolean(default=False)
 
     @post_load
     def _create_column(self, data, **kwargs):
@@ -39,4 +40,4 @@ class ColumnSchema(Schema):
                       rename=data.get('rename'), escape=data.get('escape'),
                       mandatory=data.get('mandatory'), pk=data.get('pk'),
                       default_value=data.get('default_value'), ignored=data.get('ignored'),
-                      tech_column=data.get('tech_column'))
+                      tech_column=data.get('tech_column'), metadata=data.get('metadata'))

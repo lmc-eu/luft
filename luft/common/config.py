@@ -54,6 +54,7 @@ ENV = os.getenv('ENV', get_cfg('core', 'env'))
 TASKS_FOLDER = Path(
     os.getenv('TASKS_FOLDER', get_cfg('core', 'tasks_folder')))
 JDBC_CONFIG = os.getenv('JDBC_CONFIG', get_cfg('core', 'jdbc_config'))
+ES_CONFIG = os.getenv('ES_CONFIG', get_cfg('core', 'es_config'))
 BLOB_STORAGE = os.getenv('BLOB_STORAGE', get_cfg('core', 'blob_storage'))
 PATH_PREFIX = get_cfg('core', 'path_prefix')
 
@@ -68,9 +69,10 @@ BQ_JOB_ID_PREFIX = os.getenv(
     'BQ_JOB_ID_PREFIX', get_cfg('bq', 'job_id_prefix'))
 BQ_HIST_DEFAULT_TEMPLATE = get_cfg('bq', 'default_history_template')
 BQ_STAGE_DEFAULT_TEMPLATE = get_cfg('bq', 'default_stage_template')
+BQ_STAGE_NO_HIST_DEFAULT_TEMPLATE = get_cfg('bq', 'default_stage_no_hist_template')
 BQ_STAGE_SCHEMA_FORM = get_cfg('bq', 'stage_schema_form')
 BQ_HIST_SCHEMA_FORM = get_cfg('bq', 'hist_schema_form')
-
+BQ_HIST_DISABLE = os.getenv('BQ_HIST_DISABLE', get_cfg('bq', 'hist_disable'))
 # GCS
 GCS_BUCKET = os.getenv('GCS_BUCKET', get_cfg('gcs', 'bucket'))
 GCS_AUTH_METHOD = os.getenv(

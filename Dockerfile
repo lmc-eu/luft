@@ -2,10 +2,11 @@ FROM ubuntu:bionic
 
 
 # Embulk variables
-ENV EMBULK_VERSION=0.9.18 \
+ENV EMBULK_VERSION=0.9.19 \
     EMBULK_GEM=' \
       embulk-input-mysql \
       embulk-input-postgresql \
+      embulk-input-elasticsearch-nosslverify \
       embulk-output-s3 \
       embulk-output-gcs \
       embulk-output-parquet \
@@ -19,6 +20,7 @@ ENV EMBULK_VERSION=0.9.18 \
 ENV PACKAGE=' \
       git \
       curl \
+      nano \
       bash \
       python3 \
       python3-pip \
@@ -48,11 +50,9 @@ RUN if [ "$EMBULK_GEM" != "" ]; then embulk.jar gem install ${EMBULK_GEM}; fi
 RUN if [ "$NONEMBULK_GEM" != "" ]; then embulk.jar gem install ${NONEMBULK_GEM}; fi
 
 # Todo Get rid of this after publishing ot Pypi
-ADD . /work
-WORKDIR /work
-
+#ADD . /work
+#WORKDIR /work
 # Install luft
-RUN pip3 install -e ".[bq]" 
-
-ENTRYPOINT ["luft"]
+#RUN pip3 install -e ".[bq]"
+#ENTRYPOINT ["luft"]
 CMD ["--help"]

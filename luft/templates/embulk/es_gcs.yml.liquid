@@ -1,0 +1,34 @@
+in:
+  type: elasticsearch
+  nodes:
+  - { host: {{ env.ES_URI }}, port: {{ env.ES_PORT }}, user: {{ env.ES_USER }}, password: {{ env.ES_PASSWORD }}, scheme: {{ env.ES_SCHEME }} }
+  index: {{ env.ES_INDEX }}
+  index_type: {{ env.ES_INDEX_TYPE }}
+  request_timeout: 60
+  ignore_not_found: true
+  limit_size: 200000
+  per_size: 1000
+  num_threads: 2
+{{ env.ES_QUERIES }}
+{{ env.ES_FIELDS }}
+
+out:
+   type: gcs
+   bucket: {{ env.GCS_BUCKET }}
+   path_prefix: {{ env.PATH_PREFIX }}
+   file_ext: .tsv.gz
+   auth_method: {{ env.GCS_AUTH_METHOD }}
+   {{ env.GCS_APP_NAME }}
+   {{ env.GCS_SERVICE_ACCOUNT_EMAIL }}
+   {{ env.GCS_P12_KEYFILE }}
+   {{ env.GCS_JSON_KEYFILE }}
+   formatter:
+      type: csv
+      delimiter: "\t"
+      quote_policy: MINIMAL
+      header_line: true
+      escape: "\""
+      null_string: ""
+   encoders:
+   -  type: gzip
+      level: 6

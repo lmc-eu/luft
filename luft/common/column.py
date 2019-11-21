@@ -15,7 +15,7 @@ class Column:
     def __init__(self, name: str, data_type: str, rename: Optional[str] = None,
                  escape: Optional[bool] = False, mandatory: Optional[bool] = False,
                  pk: Optional[bool] = False, default_value: Optional[str] = None,
-                 ignored: Optional[bool] = False, tech_column: Optional[bool] = False):
+                 ignored: Optional[bool] = False, tech_column: Optional[bool] = False, metadata: Optional[bool] = False):
         """Create column.
 
         Parameters:
@@ -28,6 +28,7 @@ class Column:
             default_value (str): default fix value.
             ignored (bool): wheter column is ignored in historization phase.
             tech_column(bool): wheter column is just a technical. Prefixed DW_.
+            metadata: wheter column is metadata from elasticsearch
 
         """
         self.name = name
@@ -39,6 +40,7 @@ class Column:
         self.default_value = default_value
         self.ignored = ignored
         self.tech_column = tech_column
+        self.metadata = metadata
 
         self.index = 0
 
