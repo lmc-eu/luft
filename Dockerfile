@@ -50,9 +50,9 @@ RUN if [ "$EMBULK_GEM" != "" ]; then embulk.jar gem install ${EMBULK_GEM}; fi
 RUN if [ "$NONEMBULK_GEM" != "" ]; then embulk.jar gem install ${NONEMBULK_GEM}; fi
 
 # Todo Get rid of this after publishing ot Pypi
-#ADD . /work
-#WORKDIR /work
+ADD . /work
+WORKDIR /work
 # Install luft
-#RUN pip3 install -e ".[bq]"
-#ENTRYPOINT ["luft"]
+RUN pip3 install -e ".[bq]"
+ENTRYPOINT ["luft"]
 CMD ["--help"]
