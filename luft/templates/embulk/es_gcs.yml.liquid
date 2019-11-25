@@ -6,9 +6,8 @@ in:
   index_type: {{ env.ES_INDEX_TYPE }}
   request_timeout: 60
   ignore_not_found: true
-  limit_size: 200000
-  per_size: 1000
-  num_threads: 2
+  per_size: 2000
+  num_threads: 1
 {{ env.ES_QUERIES }}
 {{ env.ES_FIELDS }}
 
