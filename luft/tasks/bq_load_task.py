@@ -14,14 +14,14 @@ from luft.common.utils import NoneStr, get_path_prefix
 from luft.tasks.bq_exec_task import BQExecTask
 
 import pkg_resources
-
+import time
 # Setup logger
 logger = setup_logger('common', 'INFO')
 
 
 class BQLoadTask(BQExecTask):
     """BQ Load Task."""
-
+    load_count = 0
     def __init__(self, name: str, task_type: str, source_system: str, source_subsystem: str,
                  columns: List[Column], project_id: NoneStr = None, location: NoneStr = None,
                  dataset_id: NoneStr = None, skip_leading_rows: bool = True,
@@ -86,16 +86,19 @@ class BQLoadTask(BQExecTask):
             'luft', BQ_HIST_DEFAULT_TEMPLATE))
 
         env_vars = self.get_env_vars(ts, env)
-        self._create_dataset(self.stage_dataset_id)
 
-        if (BQ_HIST_DISABLE):
-            stage_template = no_hist_stage_template
+        if (BQLoadTask.load_count is 0):
+            self._create_dataset(self.stage_dataset_id)
+            if (BQ_HIST_DISABLE):
+                stage_template = no_hist_stage_template
+            self._run_bq_command(stage_template.parent, [stage_template.name],
+                                 env_vars)
 
-        self._run_bq_command(stage_template.parent, [stage_template.name],
-                             env_vars)
+        BQLoadTask.load_count += 1
         self.load_csv()
         if (BQ_HIST_DISABLE):
-            logger.info(f"Historization disabled env `BQ_HIST_DISABLE={BQ_HIST_DISABLE}`")
+            time.sleep(2)
+            logger.info(f"Historization disabled env `BQ_HIST_DISABLE={BQ_HIST_DISABLE}` BQLoadTask.load_count={BQLoadTask.load_count}")
             return
         self._create_dataset(self.hist_dataset_id)
         self._run_bq_command(hist_template.parent, [hist_template.name],
