@@ -2,14 +2,14 @@ FROM ubuntu:bionic
 
 
 # Embulk variables
-ENV EMBULK_VERSION=0.9.19 \
+ENV EMBULK_VERSION=0.9.23 \
     EMBULK_GEM=' \
       embulk-input-mysql \
       embulk-input-postgresql \
       embulk-input-elasticsearch-nosslverify \
       embulk-output-s3 \
       embulk-output-gcs \
-      embulk-output-parquet \
+      embulk-encoder-command \
     ' \
     NONEMBULK_GEM=' \
       httpclient \

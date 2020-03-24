@@ -19,3 +19,5 @@ out:
    encoders:
    -  type: gzip
       level: 6
+   -  type: command
+      command: tr -d '\000'
